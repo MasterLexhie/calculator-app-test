@@ -6,18 +6,18 @@
       </div>
       <div class="keys">
         <div class="special-functions">
-          <button>%</button>
-          <button>!</button>
-          <button>&#8508;</button>
-          <button>&#8911;</button>
-          <button>&#8730;</button>
-          <button>&#215;<sup>2</sup></button>
-          <button>sin</button>
-          <button>cos</button>
-          <button>tan</button>
-          <button>sin<sup> -1 </sup></button>
-          <button>cos<sup> -1 </sup></button>
-          <button>tan<sup> -1 </sup></button>
+          <button @click.prevent="specialFunctions('percentage')">%</button>
+          <button @click.prevent="specialFunctions('factorial')">!</button>
+          <button @click.prevent="specialFunctions('pi')">&#8508;</button>
+          <button @click.prevent="setOperator('raiseToPow')">&#8896;</button>
+          <button @click.prevent="specialFunctions('squareRoot')">&#8730;</button>
+          <button @click.prevent="specialFunctions('square')">&#215;<sup>2</sup></button>
+          <button @click.prevent="specialFunctions('sine')">sin</button>
+          <button @click.prevent="specialFunctions('cos')">cos</button>
+          <button @click.prevent="specialFunctions('tan')">tan</button>
+          <button @click.prevent="specialFunctions('sinInverse')">sin<sup> -1 </sup></button>
+          <button @click.prevent="specialFunctions('cosInverse')">cos<sup> -1 </sup></button>
+          <button @click.prevent="specialFunctions('tanInverse')">tan<sup> -1 </sup></button>
         </div>
         <div class="base-keys">
           <div class="numbers">
@@ -32,7 +32,7 @@
             <button @click.prevent="appendNumber(3)">3</button>
             <button @click.prevent="decimalPoint">.</button>
             <button @click.prevent="appendNumber(0)">0</button>
-            <button @click.prevent="">+/-</button>
+            <button @click.prevent="invertedNumber">+/-</button>
           </div>
           <div class="operators">
             <button @click.prevent="setOperator('/')"> &#247; </button>
@@ -54,7 +54,7 @@ export default {
       result: 0, //number value
       tmp_value: 0, //temporary value used in calculating
       reset: false,
-      operator: undefined, // operators used in calculation
+      operator: undefined // operators used in calculation
     };
   },
   methods: {
@@ -66,8 +66,14 @@ export default {
     invertedNumber() {
       this.result *= -1;
     },
-    percentage() {
-      this.result /= 100;
+    percentage(num) {
+      return num /= 100;
+    },
+    factorial(n) {
+      return n ? n * this.factorial(n - 1) : 1;
+    },
+    convertToDegree(trigFunct, angle) {
+      return trigFunct(angle * Math.PI / 180);
     },
     appendNumber(num) {
       if (this.result === 0 || this.reset === true) {
@@ -96,6 +102,10 @@ export default {
         case "/":
           value = firstNum / secondNum;
           break;
+        case "raiseToPow":
+          value = Math.pow(firstNum, secondNum);
+          break;
+        
       }
       this.result = value;
     },
@@ -107,12 +117,26 @@ export default {
       this.operator = operator;
       this.reset = true;
     },
+    specialFunctions(functions) {
+      return functions === 'percentage' ? this.percentage(this.result)
+            : functions === 'factorial' ? this.factorial(this.result)
+            : functions === 'pi' ? this.result = Math.PI
+            : functions === 'squareRoot' ? this.result = Math.sqrt(this.result)
+            : functions === 'square' ? this.result = Math.pow(this.result, 2)
+            : functions === 'sine' ? this.result = Math.sin(this.result * Math.PI / 180)
+            : functions === 'cos' ? this.result = Math.cos(this.result * Math.PI / 180)
+            : functions === 'tan' ? this.result = Math.tan(this.result)
+            : functions === 'sinInverse' ? this.result = Math.asin(this.result)
+            : functions === 'cosInverse' ? this.result = Math.acos(this.result)
+            : functions === 'tanInverse' ? this.result = Math.atan(this.result)
+            : ''
+    },
     equal() {
       this.calculate();
       this.tmp_value = 0;
       this.operator = undefined;
-    },
-  },
+    }
+  }
 };
 </script>
 <style>
