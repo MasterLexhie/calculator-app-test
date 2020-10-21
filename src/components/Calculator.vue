@@ -1,12 +1,5 @@
 <template>
-  <div class="
-    grid
-    content-end
-    my-0
-    mx-auto
-    h-screen
-    max-w-screen-md"
-  >
+  <div class="calculator-container">
     <div>
       <div class="h-40">
         <input v-model="result" type="text" class="display"/>
@@ -123,12 +116,27 @@ export default {
 };
 </script>
 <style>
+.calculator-container,
 .keys,
 .base-keys,
 .numbers,
 .operators,
 .special-functions {
   @apply grid;
+}
+
+.calculator-container {
+  @apply content-end;
+  @apply my-0;
+  @apply mx-auto;
+  @apply max-w-screen-md;
+  height: calc(100vh - 5rem);
+}
+
+@screen lg {
+  .calculator-container {
+    @apply content-center;
+  }
 }
 
 .base-keys {
@@ -151,6 +159,18 @@ export default {
 
 .operators button:active {
   @apply bg-gray-500;
+}
+
+.numbers button:active,
+.numbers button:focus,
+.numbers button:visited,
+.operators button:active,
+.operators button:focus,
+.operators button:visited,
+.special-functions button:active,
+.special-functions button:focus,
+.special-functions button:visited {
+  @apply outline-none;
 }
 
 .special-functions {
@@ -200,56 +220,3 @@ export default {
   }
 }
 </style>
-
-
- <!-- <div class="text-white bg-purple sm:bg-test md:bg-blue md:text-yellow lg:bg-red xl:bg-orange">test</div> -->
-    <!-- <button 
-      class="
-        rounded-lg px-4 
-        md:px-5 
-        xl:px-4 py-3 
-        md:py-4 
-        xl:py-3 bg-teal-500 hover:bg-teal-600 
-        md:text-lg 
-        xl:text-base text-white font-semibold leading-tight shadow-md"
-      >
-          Click me
-      </button> -->
-    <!-- <table cellspacing="10">
-      <tr>
-        <td colspan="4">
-          <input type="text" v-model="result" disabled />
-        </td>
-      </tr>
-      <tr>
-        <td class="button dark" @click="clear">C</td>
-        <td class="button dark" @click="invertedNumber">+/-</td>
-        <td class="button dark" @click="percentage">%</td>
-        <td class="button orange" @click="setOperator('/')">/</td>
-      </tr>
-      <tr>
-        <td class="button grey" @click="numbers(7)">7</td>
-        <td class="button grey" @click="numbers(8)">8</td>
-        <td class="button grey" @click="numbers(9)">9</td>
-        <td class="button orange" @click="setOperator('*')">*</td>
-      </tr>
-      <tr>
-        <td class="button grey" @click="numbers(4)">4</td>
-        <td class="button grey" @click="numbers(5)">5</td>
-        <td class="button grey" @click="numbers(6)">6</td>
-        <td class="button orange" @click="setOperator('-')">-</td>
-      </tr>
-      <tr>
-        <td class="button grey" @click="numbers(1)">1</td>
-        <td class="button grey" @click="numbers(2)">2</td>
-        <td class="button grey" @click="numbers(3)">3</td>
-        <td class="button orange" @click="setOperator('+')">+</td>
-      </tr>
-      <tr>
-        <td colspan="2" class="button button-col2 grey" @click="numbers(0)">
-          0
-        </td>
-        <td class="button grey" @click="decimalPoint">.</td>
-        <td class="button orange" @click="equal">=</td>
-      </tr>
-    </table> -->
