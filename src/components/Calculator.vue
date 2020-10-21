@@ -7,7 +7,7 @@
       <div class="keys">
         <div class="special-functions">
           <button @click.prevent="specialFunctions('percentage')">%</button>
-          <button @click.prevent="specialFunctions('factorial')">!</button>
+          <button @click.prevent="specialFunctions('factorize')">!</button>
           <button @click.prevent="specialFunctions('pi')">&#8508;</button>
           <button @click.prevent="setOperator('raiseToPow')">&#8896;</button>
           <button @click.prevent="specialFunctions('squareRoot')">&#8730;</button>
@@ -57,6 +57,15 @@ export default {
       operator: undefined // operators used in calculation
     };
   },
+  watch: {
+    result: function () {
+      if (this.result === 'Values can only be between -1 and 1') {
+        setTimeout(() => {
+          this.clear();
+        }, 2400);
+      }
+    }
+  },
   methods: {
     clear() {
       this.result = 0;
@@ -69,11 +78,16 @@ export default {
     percentage(num) {
       return num /= 100;
     },
-    factorial(n) {
-      return n ? n * this.factorial(n - 1) : 1;
+    factorial(num) {
+      return num < 0 ? this.result = -1 
+            : num === 0 ? this.result = 1 
+            : this.result = num * this.factorial(num - 1);
     },
-    convertToDegree(trigFunct, angle) {
-      return trigFunct(angle * Math.PI / 180);
+    trigInverse(trigFunct) {
+      if (this.result < -1 || this.result > 1 || isNaN(this.result)) {
+        return this.result = 'Values can only be between -1 and 1';
+      }
+      return trigFunct;
     },
     appendNumber(num) {
       if (this.result === 0 || this.reset === true) {
@@ -119,16 +133,16 @@ export default {
     },
     specialFunctions(functions) {
       return functions === 'percentage' ? this.percentage(this.result)
-            : functions === 'factorial' ? this.factorial(this.result)
+            : functions === 'factorize' ? this.factorial(this.result)
             : functions === 'pi' ? this.result = Math.PI
             : functions === 'squareRoot' ? this.result = Math.sqrt(this.result)
             : functions === 'square' ? this.result = Math.pow(this.result, 2)
             : functions === 'sine' ? this.result = Math.sin(this.result * Math.PI / 180)
             : functions === 'cos' ? this.result = Math.cos(this.result * Math.PI / 180)
             : functions === 'tan' ? this.result = Math.tan(this.result)
-            : functions === 'sinInverse' ? this.result = Math.asin(this.result)
-            : functions === 'cosInverse' ? this.result = Math.acos(this.result)
-            : functions === 'tanInverse' ? this.result = Math.atan(this.result)
+            : functions === 'sinInverse' ? this.result = this.trigInverse(Math.asin(this.result))
+            : functions === 'cosInverse' ? this.result = this.trigInverse(Math.acos(this.result))
+            : functions === 'tanInverse' ? this.result = this.trigInverse(Math.atan(this.result))
             : ''
     },
     equal() {
