@@ -1,6 +1,6 @@
 <template>
   <div class="calculator-container">
-    <div>
+    <div class="md:border md:border-solid md:shadow-md">
       <div class="h-40">
         <input v-model="result" type="text" class="display"/>
       </div>
@@ -154,7 +154,7 @@ export default {
   @apply my-0;
   @apply mx-auto;
   @apply max-w-screen-md;
-  height: calc(100vh - 5rem);
+  height: calc(100vh - 3rem);
 }
 
 @screen lg {
@@ -200,7 +200,7 @@ export default {
 .special-functions {
   @apply grid-cols-4;
   @apply bg-teal-400;
-  grid-template-rows: repeat(3, 40px);
+  grid-template-rows: repeat(3, 60px);
 }
 
 .display {
@@ -217,7 +217,7 @@ export default {
 .numbers,
 .operators {
   @apply text-white;
-  grid-template-rows: repeat(4, 60px);
+  grid-template-rows: repeat(4, 70px);
 }
 
 .equal-sign {
@@ -240,7 +240,7 @@ export default {
   .special-functions {
     @apply grid-cols-3;
     @apply order-last;
-    grid-template-rows: repeat(4, 60px);
+    grid-template-rows: repeat(4, 70px);
   }
 }
 </style>
