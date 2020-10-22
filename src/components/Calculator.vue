@@ -1,30 +1,23 @@
 <template>
-  <div class="
-    grid
-    content-end
-    my-0
-    mx-auto
-    h-screen
-    max-w-screen-md"
-  >
-    <div>
+  <div class="calculator-container">
+    <div class="md:border md:border-solid md:shadow-md">
       <div class="h-40">
         <input v-model="result" type="text" class="display"/>
       </div>
       <div class="keys">
         <div class="special-functions">
-          <button>%</button>
-          <button>!</button>
-          <button>&#8508;</button>
-          <button>&#8911;</button>
-          <button>&#8730;</button>
-          <button>&#215;<sup>2</sup></button>
-          <button>sin</button>
-          <button>cos</button>
-          <button>tan</button>
-          <button>sin<sup> -1 </sup></button>
-          <button>cos<sup> -1 </sup></button>
-          <button>tan<sup> -1 </sup></button>
+          <button @click.prevent="specialFunctions('percentage')">%</button>
+          <button @click.prevent="specialFunctions('factorize')">!</button>
+          <button @click.prevent="specialFunctions('pi')">&#8508;</button>
+          <button @click.prevent="setOperator('raiseToPow')">&#8896;</button>
+          <button @click.prevent="specialFunctions('squareRoot')">&#8730;</button>
+          <button @click.prevent="specialFunctions('square')">&#215;<sup>2</sup></button>
+          <button @click.prevent="specialFunctions('sine')">sin</button>
+          <button @click.prevent="specialFunctions('cos')">cos</button>
+          <button @click.prevent="specialFunctions('tan')">tan</button>
+          <button @click.prevent="specialFunctions('sinInverse')">sin<sup> -1 </sup></button>
+          <button @click.prevent="specialFunctions('cosInverse')">cos<sup> -1 </sup></button>
+          <button @click.prevent="specialFunctions('tanInverse')">tan<sup> -1 </sup></button>
         </div>
         <div class="base-keys">
           <div class="numbers">
@@ -39,7 +32,7 @@
             <button @click.prevent="appendNumber(3)">3</button>
             <button @click.prevent="decimalPoint">.</button>
             <button @click.prevent="appendNumber(0)">0</button>
-            <button @click.prevent="">+/-</button>
+            <button @click.prevent="invertedNumber">+/-</button>
           </div>
           <div class="operators">
             <button @click.prevent="setOperator('/')"> &#247; </button>
@@ -61,8 +54,17 @@ export default {
       result: 0, //number value
       tmp_value: 0, //temporary value used in calculating
       reset: false,
-      operator: undefined, // operators used in calculation
+      operator: undefined // operators used in calculation
     };
+  },
+  watch: {
+    result: function () {
+      if (this.result === 'Values can only be between -1 and 1') {
+        setTimeout(() => {
+          this.clear();
+        }, 2400);
+      }
+    }
   },
   methods: {
     clear() {
@@ -73,8 +75,19 @@ export default {
     invertedNumber() {
       this.result *= -1;
     },
-    percentage() {
-      this.result /= 100;
+    percentage(num) {
+      return num /= 100;
+    },
+    factorial(num) {
+      return num < 0 ? this.result = -1 
+            : num === 0 ? this.result = 1 
+            : this.result = num * this.factorial(num - 1);
+    },
+    trigInverse(trigFunct) {
+      if (this.result < -1 || this.result > 1 || isNaN(this.result)) {
+        return this.result = 'Values can only be between -1 and 1';
+      }
+      return trigFunct;
     },
     appendNumber(num) {
       if (this.result === 0 || this.reset === true) {
@@ -103,6 +116,10 @@ export default {
         case "/":
           value = firstNum / secondNum;
           break;
+        case "raiseToPow":
+          value = Math.pow(firstNum, secondNum);
+          break;
+        
       }
       this.result = value;
     },
@@ -114,21 +131,50 @@ export default {
       this.operator = operator;
       this.reset = true;
     },
+    specialFunctions(functions) {
+      return functions === 'percentage' ? this.percentage(this.result)
+            : functions === 'factorize' ? this.factorial(this.result)
+            : functions === 'pi' ? this.result = Math.PI
+            : functions === 'squareRoot' ? this.result = Math.sqrt(this.result)
+            : functions === 'square' ? this.result = Math.pow(this.result, 2)
+            : functions === 'sine' ? this.result = Math.sin(this.result * Math.PI / 180)
+            : functions === 'cos' ? this.result = Math.cos(this.result * Math.PI / 180)
+            : functions === 'tan' ? this.result = Math.tan(this.result)
+            : functions === 'sinInverse' ? this.result = this.trigInverse(Math.asin(this.result))
+            : functions === 'cosInverse' ? this.result = this.trigInverse(Math.acos(this.result))
+            : functions === 'tanInverse' ? this.result = this.trigInverse(Math.atan(this.result))
+            : ''
+    },
     equal() {
       this.calculate();
       this.tmp_value = 0;
       this.operator = undefined;
-    },
-  },
+    }
+  }
 };
 </script>
 <style>
+.calculator-container,
 .keys,
 .base-keys,
 .numbers,
 .operators,
 .special-functions {
   @apply grid;
+}
+
+.calculator-container {
+  @apply content-end;
+  @apply my-0;
+  @apply mx-auto;
+  @apply max-w-screen-md;
+  height: calc(100vh - 3rem);
+}
+
+@screen lg {
+  .calculator-container {
+    @apply content-center;
+  }
 }
 
 .base-keys {
@@ -153,10 +199,22 @@ export default {
   @apply bg-gray-500;
 }
 
+.numbers button:active,
+.numbers button:focus,
+.numbers button:visited,
+.operators button:active,
+.operators button:focus,
+.operators button:visited,
+.special-functions button:active,
+.special-functions button:focus,
+.special-functions button:visited {
+  @apply outline-none;
+}
+
 .special-functions {
   @apply grid-cols-4;
   @apply bg-teal-400;
-  grid-template-rows: repeat(3, 40px);
+  grid-template-rows: repeat(3, 60px);
 }
 
 .display {
@@ -173,7 +231,7 @@ export default {
 .numbers,
 .operators {
   @apply text-white;
-  grid-template-rows: repeat(4, 60px);
+  grid-template-rows: repeat(4, 70px);
 }
 
 .equal-sign {
@@ -196,60 +254,7 @@ export default {
   .special-functions {
     @apply grid-cols-3;
     @apply order-last;
-    grid-template-rows: repeat(4, 60px);
+    grid-template-rows: repeat(4, 70px);
   }
 }
 </style>
-
-
- <!-- <div class="text-white bg-purple sm:bg-test md:bg-blue md:text-yellow lg:bg-red xl:bg-orange">test</div> -->
-    <!-- <button 
-      class="
-        rounded-lg px-4 
-        md:px-5 
-        xl:px-4 py-3 
-        md:py-4 
-        xl:py-3 bg-teal-500 hover:bg-teal-600 
-        md:text-lg 
-        xl:text-base text-white font-semibold leading-tight shadow-md"
-      >
-          Click me
-      </button> -->
-    <!-- <table cellspacing="10">
-      <tr>
-        <td colspan="4">
-          <input type="text" v-model="result" disabled />
-        </td>
-      </tr>
-      <tr>
-        <td class="button dark" @click="clear">C</td>
-        <td class="button dark" @click="invertedNumber">+/-</td>
-        <td class="button dark" @click="percentage">%</td>
-        <td class="button orange" @click="setOperator('/')">/</td>
-      </tr>
-      <tr>
-        <td class="button grey" @click="numbers(7)">7</td>
-        <td class="button grey" @click="numbers(8)">8</td>
-        <td class="button grey" @click="numbers(9)">9</td>
-        <td class="button orange" @click="setOperator('*')">*</td>
-      </tr>
-      <tr>
-        <td class="button grey" @click="numbers(4)">4</td>
-        <td class="button grey" @click="numbers(5)">5</td>
-        <td class="button grey" @click="numbers(6)">6</td>
-        <td class="button orange" @click="setOperator('-')">-</td>
-      </tr>
-      <tr>
-        <td class="button grey" @click="numbers(1)">1</td>
-        <td class="button grey" @click="numbers(2)">2</td>
-        <td class="button grey" @click="numbers(3)">3</td>
-        <td class="button orange" @click="setOperator('+')">+</td>
-      </tr>
-      <tr>
-        <td colspan="2" class="button button-col2 grey" @click="numbers(0)">
-          0
-        </td>
-        <td class="button grey" @click="decimalPoint">.</td>
-        <td class="button orange" @click="equal">=</td>
-      </tr>
-    </table> -->
